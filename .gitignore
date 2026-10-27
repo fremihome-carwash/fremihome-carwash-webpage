@@ -1,0 +1,68 @@
+# =====================================================================
+# webpage — Vite + React + TypeScript (repo propio)
+# =====================================================================
+
+# ─── Dependencies ────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# ─── Build / dist ────────────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+
+# ─── Vite ────────────────────────────────────────────────────────────
+.vite/
+
+# ─── Env files (secrets) ─────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+# Permitir versionar el ejemplo
+!.env.example
+
+# ─── Logs ────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.pid
+
+# ─── Coverage / tests ────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+
+# ─── Caches ──────────────────────────────────────────────────────────
+.cache/
+.local/
+.turbo/
+.eslintcache
+.stylelintcache
+
+# ─── IDE / editor ────────────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# ─── OS ──────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# ─── Claude / agents working dirs ────────────────────────────────────
+.agents/
+.atl/.skill-registry.cache.json
