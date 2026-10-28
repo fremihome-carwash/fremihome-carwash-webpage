@@ -10,20 +10,23 @@ var CONFIG = {
   // redirige aca. Dejar en '' para no redirigir: sirve mientras el sitio
   // todavia se accede por el dominio de CloudFront y no hay DNS propio.
   //
+  // El apex (fremihome.com) NO va aca: va en los CNAMEs de la distribucion
+  // y esta funcion lo redirige al canonico.
+  //
   // OJO: el valor tiene que estar en los Alternate Domain Names (CNAMEs) de
   // la distribucion. Si no, el redirect no llega a ningun lado.
-  host: 'www.fremitech.com',
+  host: 'www.fremihome.com',
 
   // Carpeta del sitio dentro del bucket, tal como esta en el Origin path de
   // la distribucion. Dejar en '' si el sitio vive en la raiz del bucket.
   // Solo se usa para SACARLA de la URL si llega escrita: el Origin path la
   // vuelve a agregar y quedaria duplicada.
-  folder: '/www.fremitech.com',
+  folder: '',
 
   // false -> sitio prerenderizado: /planes sirve /planes/index.html
   // true  -> SPA con router en el cliente: cualquier ruta sin extension
   //          sirve /index.html y el router resuelve del lado del browser.
-  spa: false,
+  spa: true,
 };
 
 function handler(event) {
