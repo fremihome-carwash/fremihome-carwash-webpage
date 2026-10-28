@@ -14,8 +14,9 @@ jobs:
     # el contexto `secrets` no esta disponible dentro de un `if:` de paso.
     env:
       AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-      # Destino del sync, p.ej. s3://mi-bucket/mi-prefijo/
-      S3_DEST: ${{ vars.S3_DEST }}
+      # Destino del sync. Acepta "mi-bucket", "mi-bucket/mi-prefijo"
+      # o la URI completa "s3://mi-bucket/mi-prefijo".
+      AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
 
     steps:
     - name: Checkout repository
@@ -25,10 +26,17 @@ jobs:
       # Falla temprano y con un mensaje claro: sin destino, `aws s3 sync`
       # abortaria recien al final con un error cripto de URI invalida.
       run: |
-        if [ -z "$S3_DEST" ]; then
-          echo "::error::Falta la variable S3_DEST (Settings > Environments > production > Variables)."
+        if [ -z "$AWS_S3_BUCKET" ]; then
+          echo "::error::Falta la variable AWS_S3_BUCKET (Settings > Environments > production > Variables)."
           exit 1
         fi
+        # Normaliza a una URI valida: el prefijo s3:// es opcional al
+        # configurar la variable, y la barra final la exige `aws s3 sync`.
+        DEST="$AWS_S3_BUCKET"
+        case "$DEST" in s3://*) ;; *) DEST="s3://$DEST" ;; esac
+        case "$DEST" in */) ;; *) DEST="$DEST/" ;; esac
+        echo "S3_DEST=$DEST" >> "$GITHUB_ENV"
+        echo "Destino del deploy: $DEST"
 
     - name: Setup Node
       uses: actions/setup-node@v4
