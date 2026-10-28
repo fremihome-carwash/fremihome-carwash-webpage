@@ -36,6 +36,21 @@ var SITES = [
     folder: '',
     spa: true,
   },
+  {
+    // App cliente (Expo export --platform web). Repo:
+    // tecniredesall/fremihome-carwash-app-client
+    // Conviene agregar aca tambien el d*.cloudfront.net de su distribucion.
+    hosts: ['app.fremihome.com'],
+    canonical: 'app.fremihome.com',
+
+    // Asume bucket (u Origin path) propio para la app. Si la distribucion
+    // tiene Origin path /app.fremihome.com, poner esa misma ruta aca.
+    folder: '',
+
+    // Expo con web.output = "single" exporta una sola index.html: toda ruta
+    // la resuelve el router en el browser.
+    spa: true,
+  },
 ];
 
 // Host que no figura en ninguna entrada: un dominio nuevo todavia sin dar
