@@ -14,29 +14,10 @@ jobs:
     # el contexto `secrets` no esta disponible dentro de un `if:` de paso.
     env:
       AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-      # Destino del sync. Acepta "mi-bucket", "mi-bucket/mi-prefijo"
-      # o la URI completa "s3://mi-bucket/mi-prefijo".
-      AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Validate config
-      # Falla temprano y con un mensaje claro: sin destino, `aws s3 sync`
-      # abortaria recien al final con un error cripto de URI invalida.
-      run: |
-        if [ -z "$AWS_S3_BUCKET" ]; then
-          echo "::error::Falta la variable AWS_S3_BUCKET (Settings > Environments > production > Variables)."
-          exit 1
-        fi
-        # Normaliza a una URI valida: el prefijo s3:// es opcional al
-        # configurar la variable, y la barra final la exige `aws s3 sync`.
-        DEST="$AWS_S3_BUCKET"
-        case "$DEST" in s3://*) ;; *) DEST="s3://$DEST" ;; esac
-        case "$DEST" in */) ;; *) DEST="$DEST/" ;; esac
-        echo "S3_DEST=$DEST" >> "$GITHUB_ENV"
-        echo "Destino del deploy: $DEST"
 
     - name: Setup Node
       uses: actions/setup-node@v4
@@ -48,19 +29,19 @@ jobs:
       run: npm ci
 
     - name: Build site
-      run: npm run build   # tsc -b + vite build -> genera dist/
+      run: npm run build   # tsc + vite build -> genera dist/
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+        aws-region: us-east-1
 
     - name: Sync dist to S3
-      # El contenido de dist/ queda en la raiz del prefijo configurado:
-      # dist/index.html -> $S3_DEST/index.html
-      run: aws s3 sync dist/ "$S3_DEST" --delete
+      # El contenido de dist/ queda en la raiz del mismo prefijo de siempre:
+      # dist/index.html -> s3://$AWS_S3_BUCKET/index.html
+      run: aws s3 sync dist/ "s3://${{ vars.AWS_S3_BUCKET }}" --delete
 
     - name: Invalidate CloudFront
       # Sin esto el deploy queda invisible: CloudFront cachea una variante por
